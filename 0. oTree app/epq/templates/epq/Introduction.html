@@ -1,0 +1,31 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree %}
+
+{% block title %}
+    Questionnaire
+{% endblock %}
+
+{% block content %}
+
+<div class="instructions" style="height: 135px;">
+    <ul>
+        <li>
+            In this last stage, you cannot earn additional points.
+        </li>
+        <li>
+            Instead, we ask you to evaluate some statements and answer a few questions.
+        </li>
+        <li>
+            We ask you to respond truthfully and to the best of your ability.
+        </li>
+        <li>
+            Please do not overthink statements and questions too much, and try to respond what naturally comes to your mind.
+        </li>
+    </ul>
+</div>
+
+{% formfield player.accept_info label="I have read this information and would like to continue." %}
+<br>
+    {% next_button %}
+
+{% endblock %}

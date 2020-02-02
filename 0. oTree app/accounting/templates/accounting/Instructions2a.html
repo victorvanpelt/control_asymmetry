@@ -1,0 +1,92 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree %}
+
+{% block title %}
+    Instructions
+{% endblock %}
+
+{% block content %}
+    <span id="warningt"></span>
+    <p></p>
+
+<div class="instructions" style="height: 225px;">
+    <b>
+    <table>
+    <tr>
+        Payoffs
+    </tr>
+    <tr>
+        <td>
+            {% if player.id_in_group == 1 %}
+                You (Player 1):  &nbsp;
+            {% else %}
+                Player 1: &nbsp;
+            {% endif %}
+        </td>
+        <td>
+            a &times; (15 &minus; <span style="color: rgb(0,123,255);">c</span>) &nbsp;
+        </td>
+        <td>
+            &plus; (1 &minus; a) &times; b1
+        </td>
+    </tr>
+    <tr>
+        <td>
+            {% if player.id_in_group == 2 %}
+                You (Player 2):  &nbsp;
+            {% else %}
+                Player 2: &nbsp;
+            {% endif %}
+        </td>
+        <td>
+            a &times; 5 &nbsp;
+        </td>
+        <td>
+            &plus; (1 &minus; a) &times; b2
+        </td>
+    </tr>
+    </table>
+    </b>
+    <hr>
+    <ul>
+        <li>
+            The value for <b style="color: rgb(0,123,255);">c</b> cannot be lower than <b>1</b> point and cannot be higher than <b>9</b> points.
+        </li>
+        <li>
+                {% if player.id_in_group == 1 %}
+                    <b style="color: rgb(0,123,255);">c</b> can only influence how much points <b>you</b> earn, and not how much points <b>Player 2</b> earns.
+                {% else %}
+                    <b style="color: rgb(0,123,255);">c</b> can only influence how much points <b>Player 1</b> earns, and not how much points <b>you</b> earn.
+                {% endif %}
+        </li>
+        <li>
+            <b>You</b> and <b>Player {{ player.get_partner.id_in_group }}</b> observe the value of <b style="color: rgb(0,123,255);">c</b> when you make a decision.
+        </li>
+    </ul>
+</div>
+    <p>
+        Please evaluate the following statements.
+    </p>
+    <p>
+        <b style="color: rgb(0,123,255);">c</b> can have a value of <b>10</b> points.
+        {% formfield player.Instr2aa label=None %}
+    </p>
+    <p>
+        Only you know what the value of <b style="color: rgb(0,123,255);">c</b> is in each period.
+        {% formfield player.Instr2ab label=None %}
+    </p>
+
+    {% next_button %}
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+        setTimeout(function() {
+            document.getElementById("warningt").innerHTML =
+                '<div class="progress-bar-2" align="left" style="width: 250px; color: rgb(255,255,255); border-radius: 5px; background-color: rgb(228,28,28); height: 30px; text-align:center;"><b>Please finalize your answers</b></div>';
+        }, 60000);
+    </script>
+
+{% endblock %}

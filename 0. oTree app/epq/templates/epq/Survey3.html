@@ -1,0 +1,37 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree %}
+
+{% block title %}
+    Questionnaire
+{% endblock %}
+
+{% block content %}
+
+    <div class="instructions" style="text-align:center">
+    <b>
+        Here are several personality traits that may or may not apply to you.<br>
+        Please rate the extent to which each pair of traits applies to you, even if one trait applies more strongly than the other.
+    </b>
+    </div>
+    <table class="table">
+    {% for field in form %}
+        <tr>
+            <td>
+                {{ field.label }}
+            </td>
+            <td align="right">
+                {{ field }}
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+    <hr>
+    {% next_button %}
+
+    <div class="progress" style="height: 30px;">
+    <div class="progress-bar" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100" style="width:{{progress|json}}%; text-align:center">
+    <span style="font-size:12pt;">{{ progress|floatformat:0}}%</span>
+    </div>
+    </div>
+
+{% endblock %}

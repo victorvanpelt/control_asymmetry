@@ -1,0 +1,57 @@
+{% extends "global/Base.html" %}
+{% load staticfiles otree %}
+{% load i18n %}
+
+
+{# ****************************************************************************************************************** #}
+{# *** STYLES *** #}
+{# ****************************************************************************************************************** #}
+
+{# ****************************************************************************************************************** #}
+{# *** TITLE *** #}
+{# ****************************************************************************************************************** #}
+{% block title %}
+    {% trans "Instructions" %}
+{% endblock %}
+
+
+{# ****************************************************************************************************************** #}
+{# *** CONTENT *** #}
+{# ****************************************************************************************************************** #}
+{% block content %}
+
+    <div class="instructions" xmlns="http://www.w3.org/1999/html" style="height: 232px;">
+    <ul>
+        <li>
+             In this next activity of the decision stage, you will see a field with {{ num_boxes }} boxes.
+        </li>
+        <li>
+            Each box you collect gives you <b>{{ box_value|floatformat:2 }}</b> points.
+        </li>
+        <li>
+            However, behind one of the boxes hides <b>one bomb</b> that destroys everything that has been collected.
+        </li>
+        <li>
+            While you do not know where the bomb is located, it can be in any place with equal probability.
+        </li>
+        <li>
+            Your task is to choose how many boxes to randomly collect by filling in a number between <b>0</b> and <b>{{ num_boxes }}</b>.
+        </li>
+        <li>
+            After you have filled in your number, press '<b>Stop</b>' and '<b>Solve</b>' to finalize your decision.
+        </li>
+        <li>
+            If your random selection of boxes does not contain the bomb, you earn <b>{{ box_value|floatformat:2 }}</b> points for every collected box.
+        </li>
+        <li>
+            If you collect the box where the bomb is located, the bomb will explode and you will earn <b>0</b> points.
+        </li>
+    </ul>
+    </div>
+
+        {% formfield player.accept_conditions label="I understand and I would like to make my decision." %}
+
+        <p></p>
+
+     {% next_button %}
+{% endblock %}

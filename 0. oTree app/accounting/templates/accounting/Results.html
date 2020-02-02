@@ -1,0 +1,188 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree %}
+
+{% block title %}
+    Results
+{% endblock %}
+
+{% block content %}
+    <span id="warningt"></span>
+    <p></p>
+{% if subsession.round_number == 1 %}
+    <div class="progress" style="height: 30px;">
+        <div class="progress-bar" role="progressbar" aria-valuenow="{{ round_number_perc }}" aria-valuemin="0" aria-valuemax="100" style="width:{{ round_number_perc }}%; text-align:center">
+            <span style="font-size:12pt;">Period</span>
+        </div>
+        <div class="progress-bar bg-transparent" role="progressbar" style="width:{{ round_number_perc }}%; text-align:left" aria-valuenow="{{ round_number_perc }}" aria-valuemin="0" aria-valuemax="100">
+            <span style="font-size:12pt; color:rgb(0, 0, 0);">{{ subsession.round_number }} of {{ Constants.num_rounds }}</span>
+        </div>
+    </div>
+{% else %}
+        <div class="progress" style="height: 30px;">
+            <div class="progress-bar" role="progressbar" aria-valuenow="{{ round_number_perc }}" aria-valuemin="0" aria-valuemax="100" style="width:{{ round_number_perc }}%; text-align:center">
+                <span style="font-size:12pt;">Period {{ subsession.round_number }} of {{ Constants.num_rounds }}</span>
+            </div>
+        </div>
+{% endif %}
+    <p></p>
+{% if player.id_in_group == 1 %}
+        <div class="instructions">
+            {% if group.e_g == 1 %}
+                The value for <b>c</b> was <b>{{ group.e_g|floatformat:0  }}</b> point.<br>
+            {% else %}
+                The value for <b>c</b> was <b>{{ group.e_g|floatformat:0  }}</b> points.<br>
+            {% endif %}
+                <b>You</b> (<b>Player 1</b>) chose to set <b>a</b> to <b>{{ group.r|floatformat:2 }}</b>.<br>
+            {% if group.r == 1 %}
+                <b>Player 2</b> could not choose <b>b1</b> and <b>b2</b>.
+            {% else %}
+                <b>Player 2</b> chose to set <b>b1</b> to <b>{{ group.payoff1|floatformat:2 }}</b>, and <b>b2</b> to <b>{{group.payoff2|floatformat:2}}</b>.
+            {% endif %}
+            <hr>
+            <p>
+                Payoffs in this period:
+            </p>
+            <b>You</b>: <b style="color: rgb(0,123,255);">{{ player.payoff|floatformat:2 }}</b> points<br>
+            <b>Player {{ player.get_partner.id_in_group }}</b>: <b style="color: rgb(0,123,255);">{{ player.get_partner.payoff|floatformat:2 }}</b> points
+        </div>
+        <br>
+        {% next_button %}
+    <input type="hidden" name="historyr1" value="" id="id_historyr1"/>
+    {% if subsession.round_number > 1 %}
+  <div class="container">
+  <button style="color: rgb(255,255,255); background-color: rgb(0,123,255);" type="button" class="btn btn-info" data-toggle="collapse" id="buttonh1" data-target="#demo">Click to view history</button>
+  <div id="demo" class="collapse">
+    <p>
+    </p>
+ <table class="table">
+    <tr>
+        <th>Period</th>
+        <th>Results</th>
+        <th>Payoffs</th>
+    </tr>
+    {% for p in player.in_previous_rounds %}
+        <tr>
+            <td>{{ p.round_number }}</td>
+            <td>
+                <b>c</b> = {{ p.group.e_g|floatformat:0 }}<br>
+                <b>a</b> = {{ p.group.r|floatformat:2 }}<br>
+                {% if p.group.r == 1 %}
+                    {% if player.id_in_group == 1 %}
+                        Player 2 could not choose <b>b1</b> and <b>b2</b>
+                    {% else %}
+                        You could not choose <b>b1</b> and <b>b2</b>
+                    {% endif %}
+                {% else %}
+                    <b>b1</b> = {{ p.group.payoff1|floatformat:2 }}<br>
+                    <b>b2</b> = {{ p.group.payoff2|floatformat:2 }}
+                {%  endif %}
+            </td>
+            <td>
+            {% if player.id_in_group == 1 %}
+                <b>You</b>: {{ p.group.payoff_p1 }}<br>
+                <b>Player 2</b>: {{ p.group.payoff_p2 }}
+            {% else %}
+                <b>Player 1</b>: {{ p.group.payoff_p1 }}<br>
+                <b>You</b>: {{ p.group.payoff_p2 }}
+            {% endif %}
+
+
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+ {% endif %}
+  </div>
+</div>
+{% else %}
+        <div class="instructions">
+            {% if group.e_g == 1 %}
+                The value for <b>c</b> was <b>{{ group.e_g|floatformat:0  }}</b> point.<br>
+            {% else %}
+                The value for <b>c</b> was <b>{{ group.e_g|floatformat:0  }}</b> points.<br>
+            {% endif %}
+                <b>Player 1</b> chose to set <b>a</b> to <b>{{ group.r|floatformat:2 }}</b>.<br>
+            {% if group.r == 1 %}
+                <b>You</b> (<b>Player 2</b>) could not choose <b>b1</b> and <b>b2</b>.
+            {% else %}
+                <b>You</b> (<b>Player 2</b>) chose to set <b>b1</b> to <b>{{ group.payoff1|floatformat:2 }}</b>, and <b>b2</b> to <b>{{group.payoff2|floatformat:2}}</b>.
+            {% endif %}
+            <hr>
+            <p>
+                Payoffs in this period:
+            </p>
+            <b>Player {{ player.get_partner.id_in_group }}</b>: <b style="color: rgb(0,123,255);">{{ player.get_partner.payoff|floatformat:2 }}</b> points<br>
+            <b>You</b>: <b style="color: rgb(0,123,255);">{{ player.payoff|floatformat:2 }}</b> points
+        </div>
+    <br>
+    {% next_button %}
+
+    <input type="hidden" name="historyr2" value="" id="id_historyr2"/>
+    {% if subsession.round_number > 1 %}
+  <div class="container">
+  <button style="color: rgb(255,255,255); background-color: rgb(0,123,255);" type="button" class="btn btn-info" data-toggle="collapse" id="buttonh2" data-target="#demo">Click to view history</button>
+  <div id="demo" class="collapse">
+    <p>
+    </p>
+ <table class="table">
+    <tr>
+        <th>Period</th>
+        <th>Results</th>
+        <th>Payoffs</th>
+    </tr>
+    {% for p in player.in_previous_rounds %}
+        <tr>
+            <td>{{ p.round_number }}</td>
+            <td>
+                <b>c</b> = {{ p.group.e_g|floatformat:0 }}<br>
+                <b>a</b> = {{ p.group.r|floatformat:2 }}<br>
+                {% if p.group.r == 1 %}
+                    {% if player.id_in_group == 1 %}
+                        Player 2 could not choose <b>b1</b> and <b>b2</b>
+                    {% else %}
+                        You could not choose <b>b1</b> and <b>b2</b>
+                    {% endif %}
+                {% else %}
+                    <b>b1</b> = {{ p.group.payoff1|floatformat:2 }}<br>
+                    <b>b2</b> = {{ p.group.payoff2|floatformat:2 }}
+                {%  endif %}
+            </td>
+            <td>
+            {% if player.id_in_group == 1 %}
+                <b>You</b>: {{ p.group.payoff_p1 }}<br>
+                <b>Player 2</b>: {{ p.group.payoff_p2 }}
+            {% else %}
+                <b>Player 1</b>: {{ p.group.payoff_p1 }}<br>
+                <b>You</b>: {{ p.group.payoff_p2 }}
+            {% endif %}
+
+
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+ {% endif %}
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+        $('#buttonh1').click(function() {
+            $('#id_historyr1').val(1);
+        });
+    </script>
+        <script>
+        $('#buttonh2').click(function() {
+            $('#id_historyr2').val(1);
+        });
+    </script>
+    <script>
+        setTimeout(function() {
+            document.getElementById("warningt").innerHTML =
+                '<div class="progress-bar-2" align="left" style="width: 250px; color: rgb(255,255,255); border-radius: 5px; background-color: rgb(228,28,28); height: 30px; text-align:center;"><b>Please click next to continue</b></div>';
+        }, 45000);
+    </script>
+{% endblock %}

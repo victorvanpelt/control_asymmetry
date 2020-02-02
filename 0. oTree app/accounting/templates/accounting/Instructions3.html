@@ -1,0 +1,137 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree %}
+
+{% block title %}
+    Instructions
+{% endblock %}
+
+{% block content %}
+    <span id="warningt"></span>
+    <p></p>
+    <div class="instructions" style="height: 335px;">
+    <b>
+    <table>
+    <tr>
+        Payoffs
+    </tr>
+    <tr>
+        <td>
+           {% if player.id_in_group == 1 %}
+                You (Player 1):  &nbsp;
+            {% else %}
+                Player 1: &nbsp;
+            {% endif %}
+        </td>
+        <td>
+            a &times; (15 &minus; c)
+        </td>
+        <td>
+            &plus; (1 &minus; a) &times; <span style="color: rgb(0,123,255); " id="demo2">b1</span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            {% if player.id_in_group == 2 %}
+                You (Player 2):  &nbsp;
+            {% else %}
+                Player 2: &nbsp;
+            {% endif %}
+        </td>
+        <td>
+            a &times; 5 &nbsp;
+        </td>
+        <td>
+            &plus; (1 &minus; a) &times; <span style="color: rgb(0,123,255);" id="demo3">b2</span>
+        </td>
+    </tr>
+    </table>
+    </b>
+    <hr>
+    <ul>
+    <li>
+        {% if player.id_in_group == 1 %}
+            After <b>you</b> have chosen a value for <b>a</b>, <b>Player 2</b> observes the value for <b>a</b> that <b>you</b> have chosen.
+        {%  else %}
+            After <b>Player 1</b> has chosen a value for <b>a</b>, <b>you</b> observe the value for <b>a</b> that <b>Player 1</b> has chosen.
+        {% endif %}
+    </li>
+    <li>
+        {% if player.id_in_group == 1 %}
+            Next, <b>Player 2</b> chooses values for <b style="color: rgb(0,123,255);">b1</b> and <b style="color: rgb(0,123,255);">b2</b> ranging from <b>5</b> to <b>15</b> points, only if <b>a</b> is lower than <b>1.00</b>.
+        {%  else %}
+            Next, <b>you</b> choose values for <b style="color: rgb(0,123,255);">b1</b> and <b style="color: rgb(0,123,255);">b2</b> ranging from <b>5</b> to <b>15</b> points, only if <b>a</b> is lower than <b>1.00</b>.
+        {% endif %}
+    </li>
+    <li>
+        {% if player.id_in_group == 1 %}
+            As <b>Player 2</b> increases <b style="color: rgb(0,123,255);">b1</b> from <b>5</b> to <b>15</b> points, the value of <b style="color: rgb(0,123,255);">b2</b> drops from <b>15</b> to <b>5</b> points, and vice versa.
+        {%  else %}
+            As <b>you</b> increase <b style="color: rgb(0,123,255);">b1</b> from <b>5</b> to <b>15</b> points, the value of <b style="color: rgb(0,123,255);">b2</b> drops from <b>15</b> to <b>5</b> points, and vice versa.
+        {% endif %}
+    </li>
+    <li>
+        The sum of <b style="color: rgb(0,123,255);">b1</b> and <b style="color: rgb(0,123,255);">b2</b> must always be <b>20</b> points.
+    </li>
+    </ul>
+    <p>
+        Please drag the slider (or use the left and right arrow keys) to test how <b style="color: rgb(0,123,255);">b1</b> and <b style="color: rgb(0,123,255);">b2</b> influence the payoffs.
+    </p>
+    {% formfield player.Fakeslider label=None %}
+    </div>
+    <p>
+        Please evaluate the following statements (use the slider if necessary).
+    </p>
+    <p>
+        {% if player.id_in_group == 1 %}
+            If <b>Player 2</b> sets <b style="color: rgb(0,123,255);">b1</b> to <b>9</b> points, then <b style="color: rgb(0,123,255);">b2</b> must be <b>11</b> points.
+        {% else %}
+            If <b>you</b> set <b style="color: rgb(0,123,255);">b1</b> to <b>9</b> points, then <b style="color: rgb(0,123,255);">b2</b> must be <b>11</b> points.
+        {% endif %}
+        {% formfield player.Instr3a label=None %}
+    </p>
+    <p>
+        {% if player.id_in_group == 1 %}
+            If <b>Player 2</b> sets <b style="color: rgb(0,123,255);">b1</b> to <b>5</b> points, then <b style="color: rgb(0,123,255);">b2</b> also equals <b>5</b> points.
+        {% else %}
+            If <b>you</b> set <b style="color: rgb(0,123,255);">b1</b> to <b>5</b> points, then <b style="color: rgb(0,123,255);">b2</b> also equals <b>5</b> points.
+        {% endif %}
+        {% formfield player.Instr3b label=None %}
+    </p>
+        <p>
+        {% if player.id_in_group == 1 %}
+            If <b>you</b> set <b>a</b> to <b>1.00</b>, then <b>Player 2</b> cannot choose values for <b style="color: rgb(0,123,255);">b1</b> and <b style="color: rgb(0,123,255);">b2</b>.
+        {% else %}
+            If <b>Player 1</b> sets <b>a</b> to <b>1.00</b>, then <b>you</b> cannot choose values for <b style="color: rgb(0,123,255);">b1</b> and <b style="color: rgb(0,123,255);">b2</b>.
+        {% endif %}
+        {% formfield player.Instr3c label=None %}
+    </p>
+    <p>
+        {% if player.id_in_group == 1 %}
+            If <b>you</b> set <b>a</b> to <b>0.00</b>, then <b>your</b> payoff equals <b style="color: rgb(0,123,255);">b1</b> and the payoff of <b>Player 2</b> equals <b style="color: rgb(0,123,255);">b2</b>.
+        {% else %}
+            If <b>Player 1</b> sets <b>a</b> to <b>0.00</b>, then <b>Player 1</b>'s payoff equals <b style="color: rgb(0,123,255);">b1</b> and <b>your</b> payoff equals <b style="color: rgb(0,123,255);">b2</b>.
+        {% endif %}
+        {% formfield player.Instr3d label=None %}
+    </p>
+
+    {% next_button %}
+
+{% endblock %}
+    {% block scripts %}
+    <script>
+        $('input[name=Fakeslider]').on('input', function(){
+            var x = $(this).val();
+            var y = (-1 * (x - 20)).toFixed(2);
+            document.getElementById("demo2").innerHTML = x + '<span style="color: rgb(0,0,0);"> points</span>';
+            document.getElementById("demo3").innerHTML = y + '<span style="color: rgb(0,0,0);"> points</span>';
+        });
+    </script>
+
+    <script>
+        setTimeout(function() {
+            document.getElementById("warningt").innerHTML =
+                '<div class="progress-bar-2" align="left" style="width: 250px; color: rgb(255,255,255); border-radius: 5px; background-color: rgb(228,28,28); height: 30px; text-align:center;"><b>Please finalize your answers</b></div>';
+        }, 110000);
+    </script>
+
+{% endblock %}

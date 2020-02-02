@@ -1,0 +1,93 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree %}
+
+{% block title %}
+    Overview
+{% endblock %}
+
+{% block content %}
+    <span id="warningt"></span>
+    <p></p>
+    <img style="display: block; margin-left: auto;  margin-right: auto;" src="{% static "accounting/flow.png" %}" />
+    <p></p>
+    <div class="instructions" style="height: 240px;">
+    <b>
+    <table>
+    <tr>
+        Payoffs
+    </tr>
+    <tr>
+        <td>
+           {% if player.id_in_group == 1 %}
+                You (Player 1):  &nbsp;
+            {% else %}
+                Player 1: &nbsp;
+            {% endif %}
+        </td>
+        <td>
+            a &times; (15 &minus; c)
+        </td>
+        <td>
+            &plus; (1 &minus; a) &times; b1
+        </td>
+    </tr>
+    <tr>
+        <td>
+            {% if player.id_in_group == 2 %}
+                You (Player 2):  &nbsp;
+            {% else %}
+                Player 2: &nbsp;
+            {% endif %}
+        </td>
+        <td>
+            a &times; 5 &nbsp;
+        </td>
+        <td>
+            &plus; (1 &minus; a) &times; b2
+        </td>
+    </tr>
+    </table>
+    </b>
+    <hr>
+    <ul>
+        <li>
+            Both players observe <b>c</b> which cannot be lower than <b>1</b> point nor higher than <b>9</b> points.
+        </li>
+        <li>
+            {% if player.id_in_group == 1 %}
+                In each period, <b>you</b> first choose a value for <b>a</b> ranging from <b>0.00</b> to <b>1.00</b>, which <b>Player 2</b> will observe.
+            {% else %}
+                In each period, <b>Player 1</b> first chooses a value for <b>a</b> ranging from <b>0.00</b> to <b>1.00</b>, which <b>you</b> will observe.
+            {% endif %}
+        </li>
+        <li>
+            {% if player.id_in_group == 1 %}
+                Next, <b>Player 2</b> chooses values for <b>b1</b> and <b>b2</b> ranging from <b>5</b> to <b>15</b> points if <b>you</b> have chosen a value for <b>a</b> below <b>1.00</b>.
+            {% else %}
+                Next, <b>you</b> choose values for <b>b1</b> and <b>b2</b> ranging from <b>5</b> to <b>15</b> points if <b>Player 1</b> has chosen a value for <b>a</b> below <b>1.00</b>.
+            {% endif %}
+        </li>
+        <li>
+            At the end of each period, <b>you</b> and <b>Player {{ player.get_partner.id_in_group }}</b> will observe the results of what happened in the period.
+        </li>
+    </ul>
+</div>
+    <p>
+        <b>Please be aware that the first period is about to start.</b>
+    </p>
+    {% formfield player.accept_payoffs label="I have read the information above and would like to start." %}
+    <p></p>
+    {% next_button %}
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+        setTimeout(function() {
+            document.getElementById("warningt").innerHTML =
+                '<div class="progress-bar-2" align="left" style="width: 250px; color: rgb(255,255,255); border-radius: 5px; background-color: rgb(228,28,28); height: 30px; text-align:center;"><b>Please click next to continue</b></div>';
+        }, 35000);
+    </script>
+
+{% endblock %}

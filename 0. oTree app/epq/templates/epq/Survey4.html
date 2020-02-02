@@ -1,0 +1,44 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree %}
+
+{% block title %}
+    Questionnaire
+{% endblock %}
+
+{% block content %}
+
+    <div class="instructions">
+        In this task, we ask you to imagine that you have been randomly paired with another person whom we refer to as the 'Other'.<br>
+        You do not know and will not knowingly meet the 'Other' person in the future.<br>
+        Both you and the ‘Other’ person will be making choices by choosing either the letter A, B, or C.<br>
+        Your own choices will produce fictional points for both yourself and the ‘Other’ person.<br>
+        Likewise, the 'Other’s' choice will produce fictional points for him/her and for you.<br>
+        Every point has value: the more fictional points you receive, the better for you, and the more fictional points the ‘Other’ receives, the better for him/her.
+        <br>
+        <br>
+        Before you make your choices, please keep in mind that there are no right or wrong answers.<br>
+        That is, choose the option that you, for whatever reason, prefer most.<br>
+        For each of the nine situations, choose A, B, or C depending on which you prefer most.<br>
+    </div>
+     <table class="table">
+    {% for field in form %}
+        <tr>
+            <td>
+                {{ field.label }}
+            </td>
+            <td align="right">
+                {{ field }}
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+    <hr>
+    {% next_button %}
+
+    <div class="progress" style="height: 30px;">
+    <div class="progress-bar" role="progressbar" aria-valuenow="{{progress}}" aria-valuemin="0" aria-valuemax="100" style="width:{{progress|json}}%; text-align:center">
+    <span style="font-size:12pt;">{{ progress|floatformat:0}}%</span>
+    </div>
+    </div>
+
+{% endblock %}

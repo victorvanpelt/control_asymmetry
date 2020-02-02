@@ -1,0 +1,87 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree %}
+
+{% block title %}
+    Instructions
+{% endblock %}
+
+{% block content %}
+    <span id="warningt"></span>
+    <p></p>
+{#    <img style="display: block; margin-left: auto;  margin-right: auto;" src="{% static "accounting/flow.png" %}" />#}
+{#    <p></p>#}
+{# 90 #}
+    <div class="instructions" style="height: 200px;">
+    <b>
+    <table>
+    <tr>
+        Payoffs
+    </tr>
+    <tr>
+        <td>
+            {% if player.id_in_group == 1 %}
+                You (Player 1):  &nbsp;
+            {% else %}
+                Player 1: &nbsp;
+            {% endif %}
+        </td>
+        <td>
+            a &times; (15 &minus; c) &nbsp;
+        </td>
+        <td>
+            &plus; (1 &minus; a) &times; b1
+        </td>
+    </tr>
+    <tr>
+        <td>
+            {% if player.id_in_group == 2 %}
+                You (Player 2):  &nbsp;
+            {% else %}
+                Player 2: &nbsp;
+            {% endif %}
+        </td>
+        <td>
+            a &times; 5 &nbsp;
+        </td>
+        <td>
+            &plus; (1 &minus; a) &times; b2
+        </td>
+    </tr>
+    </table>
+    </b>
+    <hr>
+    <ul>
+{#        <li>#}
+{#            The graph above displays the sequence in a particular period.#}
+{#        </li>#}
+        <li>
+            The payoffs above display how <b>your</b> and <b>Player {{ player.get_partner.id_in_group }}</b>'s points are determined in each period.
+        </li>
+{#        <li>#}
+{#            In each period, both <b>you</b> and <b>Player {{ player.get_partner.id_in_group }}</b> may be asked to make a decision.#}
+{#        </li>#}
+        <li>
+            The next few screens will explain the payoffs in detail.
+        </li>
+{#        <li>#}
+{#            The next few screens explain this sequence and how <b>your</b> and <b>Player {{ player.get_partner.id_in_group }}</b>'s decisions influence how many points you earn.#}
+{#        </li>#}
+    </ul>
+    </div>
+{##}
+{#     {% formfield player.accept_payoffs label="I have read the information above and would like to continue." %}#}
+{#    <br>#}
+    {% next_button %}
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+        setTimeout(function() {
+            document.getElementById("warningt").innerHTML =
+                '<div class="progress-bar-2" align="left" style="width: 250px; color: rgb(255,255,255); border-radius: 5px; background-color: rgb(228,28,28); height: 30px; text-align:center;"><b>Please click next to continue</b></div>';
+        }, 30000);
+    </script>
+
+{% endblock %}

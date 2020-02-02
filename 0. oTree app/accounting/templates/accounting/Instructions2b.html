@@ -1,0 +1,136 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree %}
+
+{% block title %}
+    Instructions
+{% endblock %}
+
+{% block content %}
+    <span id="warningt"></span>
+    <p></p>
+    <div class="instructions" style="height: 335px;">
+    <b>
+    <table>
+    <tr>
+        Payoffs
+    </tr>
+    <tr>
+        <td>
+            {% if player.id_in_group == 1 %}
+                You (Player 1):  &nbsp;
+            {% else %}
+                Player 1: &nbsp;
+            {% endif %}
+        </td>
+        <td>
+            <span style="color: rgb(0,123,255);" id="demo2">a</span> &times; (15 &minus; c)
+        </td>
+        <td>
+            &plus; <span style="color: rgb(0,123,255);" id="demo3">(1 &minus; a)</span> &times; b1
+        </td>
+    </tr>
+    <tr>
+        <td>
+            {% if player.id_in_group == 2 %}
+                You (Player 2):  &nbsp;
+            {% else %}
+                Player 2: &nbsp;
+            {% endif %}
+        </td>
+        <td>
+            <span style="color: rgb(0,123,255);" id="demo4">a</span> &times; 5 &nbsp;
+        </td>
+        <td>
+            &plus; <span style="color: rgb(0,123,255);" id="demo5">(1 &minus; a)</span> &times; b2
+        </td>
+    </tr>
+    </table>
+    </b>
+    <hr>
+    <ul>
+    <li>
+        {% if player.id_in_group == 1 %}
+            At the start of each period, <b>you</b> first choose a value for <b style="color: rgb(0,123,255);">a</b> ranging from <b>0.00</b> to <b>1.00</b>.
+        {% else %}
+            At the start of each period, <b>Player 1</b> first chooses a value for <b style="color: rgb(0,123,255);">a</b> ranging from <b>0.00</b> to <b>1.00</b>.
+        {% endif %}
+    </li>
+    <li>
+        {% if player.id_in_group == 1 %}
+            When <b>you</b> increase <b style="color: rgb(0,123,255);">a</b>, your payoff depends more strongly on <b>15 &minus; c</b> and less strongly on <b>b1</b>.
+        {% else %}
+            When <b>Player 1</b> increases <b style="color: rgb(0,123,255);">a</b>, <b>Player 1</b>'s payoff depends more strongly on <b>15 &minus; c</b> and less strongly on <b>b1</b>.
+        {% endif %}
+    </li>
+    <li>
+        {% if player.id_in_group == 1 %}
+            However, increasing <b style="color: rgb(0,123,255);">a</b> also means that <b>Player 2</b>'s payoff depends more strongly on <b>5</b> and less strongly on <b>b2</b>.
+        {% else %}
+            However, increasing <b style="color: rgb(0,123,255);">a</b> also means that <b>your</b> payoff depends more strongly on <b>5</b> and less strongly on <b>b2</b>.
+        {% endif %}
+    </li>
+     <li>
+        {% if player.id_in_group == 1 %}
+            The next instruction screen will explain how <b>Player 2</b> can choose <b>b1</b> and <b>b2</b> after <b>you</b> have chosen <b style="color: rgb(0,123,255);">a</b>.
+        {% else %}
+            The next screen will explain how <b>you</b> can choose <b>b1</b> and <b>b2</b> after <b>Player 1</b> has chosen <b style="color: rgb(0,123,255);">a</b>.
+        {% endif %}
+    </li>
+    </ul>
+    <p>
+        Please drag the slider (or use the left and right arrow keys) to test how <b style="color: rgb(0,123,255);">a</b> influences the payoffs.
+    </p>
+    {% formfield player.Fakeslider2 label=None %}
+    </div>
+    <p>
+        Please evaluate the following statements (use the slider if necessary).
+    </p>
+    <p>
+        {% if player.id_in_group == 1 %}
+            <b>Player 2</b> chooses the value for <b style="color: rgb(0,123,255);">a</b>.
+        {% else %}
+            <b>You</b> choose the value for <b style="color: rgb(0,123,255);">a</b>.
+        {%  endif %}
+        {% formfield player.Instr2ba label=None %}
+    </p>
+    <p>
+        {% if player.id_in_group == 1 %}
+            If <b>you</b> set <b style="color: rgb(0,123,255);">a</b> to <b>1.00</b>, then <b>you</b> receive <b>15 - c</b> points and <b>Player 2</b> receives <b>5</b> points.
+        {% else %}
+            If <b>Player 1</b> sets <b style="color: rgb(0,123,255);">a</b> to <b>1.00</b>, then <b>Player 1</b> receives <b>15 - c</b> points and <b>you</b> receive <b>5</b> points.
+        {% endif %}
+        {% formfield player.Instr2bb label=None %}
+    </p>
+    <p>
+        {% if player.id_in_group == 1 %}
+            If <b>you</b> set <b style="color: rgb(0,123,255);">a</b> to <b>0.00</b>, then both <b>you</b> and <b>Player 2</b> receive zero points.
+        {% else %}
+            If <b>Player 1</b> sets <b style="color: rgb(0,123,255);">a</b> to <b>0.00</b>, then both <b>you</b> and <b>Player 1</b> receive zero points.
+        {% endif %}
+        {% formfield player.Instr2bc label=None %}
+    </p>
+
+    {% next_button %}
+
+{% endblock %}
+    {% block scripts %}
+    <script>
+        $('input[name=Fakeslider2]').on('input', function(){
+            var x = $(this).val();
+            var x1 = (1*x).toFixed(2);
+            var y = (1-x).toFixed(2);
+            document.getElementById("demo2").innerHTML = x1;
+            document.getElementById("demo3").innerHTML =y;
+            document.getElementById("demo4").innerHTML = x1;
+            document.getElementById("demo5").innerHTML =y;
+        });
+    </script>
+
+    <script>
+        setTimeout(function() {
+            document.getElementById("warningt").innerHTML =
+                '<div class="progress-bar-2" align="left" style="width: 250px; color: rgb(255,255,255); border-radius: 5px; background-color: rgb(228,28,28); height: 30px; text-align:center;"><b>Please finalize your answers</b></div>';
+        }, 90000);
+    </script>
+
+{% endblock %}

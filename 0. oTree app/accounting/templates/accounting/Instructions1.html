@@ -1,0 +1,61 @@
+{% extends "global/Page.html" %}
+{% load otree staticfiles %}
+
+{% block title %}
+    Instructions
+{% endblock %}
+
+{% block content %}
+    <span id="warningt"></span>
+    <p></p>
+    <div class="instructions" style="height: 138px">
+    <ul>
+        <li>
+            You and the other participants in this session will interact with each other for <b>{{ Constants.num_rounds }}</b> periods.
+        </li>
+        <li>
+            Half of the participants will fulfill the role of <b>Player 1</b> and the other half <b>Player 2</b>.
+        </li>
+        <li>
+            You will be <b>Player {{ player.id_in_group }}</b>, and every period you will be randomly matched to another participant who plays <b>Player {{ player.get_partner.id_in_group }}</b>.
+        </li>
+        <li>
+            In each period, <b>you</b> and <b>Player {{ player.get_partner.id_in_group }}</b> may make a decision that influences how many points both of you earn.
+        </li>
+    </ul>
+</div>
+    <p>
+        Please evaluate the following statements.
+    </p>
+    <p>
+        You fulfill the role of <b>Player {{ player.id_in_group }}</b>.
+        {% formfield player.Instr1a label=None %}
+    </p>
+    <p>
+        You will be matched to the same participant who plays <b>Player {{ player.get_partner.id_in_group }}</b> for <b>{{ Constants.num_rounds }}</b> periods.
+        {% formfield player.Instr1b label=None %}
+    </p>
+    <p>
+        {% if player.id_in_group == 1 %}
+            In each period, only <b>you</b> make a decision that influences how many points you and <b>Player 2</b> earn.
+        {% else %}
+            In each period, only <b>Player 1</b> makes a decision that influences how many points <b>you</b> and <b>Player 1</b> earn.
+        {% endif %}
+
+        {% formfield player.Instr1c label=None %}
+    </p>
+
+    {% next_button %}
+
+{% endblock %}
+
+{% block scripts %}
+
+    <script>
+        setTimeout(function() {
+            document.getElementById("warningt").innerHTML =
+                '<div class="progress-bar-2" align="left" style="width: 250px; color: rgb(255,255,255); border-radius: 5px; background-color: rgb(228,28,28); height: 30px; text-align:center;"><b>Please finalize your answers</b></div>';
+        }, 60000);
+    </script>
+
+{% endblock %}

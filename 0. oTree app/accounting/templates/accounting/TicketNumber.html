@@ -1,0 +1,27 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree %}
+
+{% block title %}
+    Please enter your personal code
+{% endblock %}
+
+{% block content %}
+
+<div class="instructions" style="height: 112px;">
+    <ul>
+    <li>
+        Please make sure that you enter the personal code located at the top of the piece of paper provided to you.
+    </li>
+    <li>
+        Your personal code has 5 characters.
+    </li>
+    <li>
+        <b>Caution</b>: entering the wrong code may imply that we cannot trace your remuneration.
+    </li>
+    </ul>
+</div>
+
+{% formfield player.tn label="Personal code:" %}
+<br>
+{% next_button %}
+{% endblock %}

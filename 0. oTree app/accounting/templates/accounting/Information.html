@@ -1,0 +1,38 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree %}
+
+{% block title %}
+    Important information
+{% endblock %}
+
+{% block content %}
+<div class="instructions" style="height: 212px;">
+    <ul>
+        <li>
+            Please read all information carefully and be aware that you cannot go back to previous screens.
+        </li>
+        <li>
+            There are three stages in this study: an instruction stage, a decision stage, and lastly a questionnaire.
+        </li>
+        <li>
+            Your decisions during the decision stage influence how many points you earn.
+        </li>
+        <li>
+            Every 10 points is worth 0.60 EUR, and you will be paid within 3 weeks after this study.
+        </li>
+        <li>
+            Students enrolled in Management Accounting (for IBA) also receive a bonus grade conform the syllabus.
+        </li>
+        <li>
+            We expect no psychological discomfort nor physical injury. Also, there is no deception and your participation is voluntary.
+        </li>
+        <li>
+            Your personal information will not be shared with anyone outside of our research team.
+        </li>
+    </ul>
+</div>
+
+{% formfield player.accept_conditions label="I have read and accept the conditions above." %}
+<br>
+{% next_button %}
+{% endblock %}

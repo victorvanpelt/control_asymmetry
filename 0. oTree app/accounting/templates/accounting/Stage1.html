@@ -1,0 +1,185 @@
+{% extends "global/Page.html" %}
+{% load staticfiles otree %}
+
+{% block title %}
+       Your decision
+{% endblock %}
+
+{% block content %}
+    <span id="warningt"></span>
+    <p></p>
+{% if subsession.round_number == 1 %}
+    <div class="progress" style="height: 30px;">
+        <div class="progress-bar" role="progressbar" aria-valuenow="{{ round_number_perc }}" aria-valuemin="0" aria-valuemax="100" style="width:{{ round_number_perc }}%; text-align:center">
+            <span style="font-size:12pt;">Period</span>
+        </div>
+        <div class="progress-bar bg-transparent" role="progressbar" style="width:{{ round_number_perc }}%; text-align:left" aria-valuenow="{{ round_number_perc }}" aria-valuemin="0" aria-valuemax="100">
+            <span style="font-size:12pt; color:rgb(0, 0, 0);">{{ subsession.round_number }} of {{ Constants.num_rounds }}</span>
+        </div>
+    </div>
+{% else %}
+    <div class="progress" style="height: 30px;">
+        <div class="progress-bar" role="progressbar" aria-valuenow="{{ round_number_perc }}" aria-valuemin="0" aria-valuemax="100" style="width:{{ round_number_perc }}%; text-align:center">
+            <span style="font-size:12pt;">Period {{ subsession.round_number }} of {{ Constants.num_rounds }}</span>
+        </div>
+    </div>
+{% endif %}
+    <p></p>
+    <div class="instructions">
+    <p>
+        <b>You</b> (<b>Player 1</b>) have been randomly matched to another participant in this session playing <b>Player 2</b>.<br>
+{#        If <b>you</b> choose a value for <b style="color: rgb(0,123,255);">a</b> lower than <b>1.00</b>, then <b>Player 2</b> will choose values for <b>b1</b> and <b>b2</b> ranging from <b>5</b> to <b>15</b> points.<br>#}
+        {% if group.e_g == 1 %}
+            The value for <b style="color: rgb(0,123,255);">c</b> equals <b style="color: rgb(0,123,255);">{{ group.e_g|floatformat:0 }}</b> point.<br>
+        {% else %}
+            The value for <b style="color: rgb(0,123,255);">c</b> equals <b style="color: rgb(0,123,255);">{{ group.e_g|floatformat:0 }}</b> points.<br>
+        {% endif %}
+        <br>
+        Now, you can choose a value for <b style="color: rgb(0,123,255);">a</b> ranging from <b>0.00</b> to <b>1.00</b> which impacts the payoffs below.<br>
+        If <b>you</b> choose a value for <b style="color: rgb(0,123,255);">a</b> lower than <b>1.00</b>, then <b>Player 2</b> will choose values for <b>b1</b> and <b>b2</b> ranging from <b>5</b> to <b>15</b> points.<br>
+    </p>
+    <hr>
+{#    <p>#}
+{#        This leads to the following payoffs in this period:#}
+{#    </p>#}
+    <b>
+    <table>
+    <tr>
+        <td>
+           {% if player.id_in_group == 1 %}
+                You (Player 1):  &nbsp;
+            {% else %}
+                Player 1: &nbsp;
+            {% endif %}
+        </td>
+        <td>
+            <span style="color: rgb(0,123,255);" id="demo2">a </span> &times; (15 &minus; {{ group.e_g|floatformat:0 }}) &nbsp;
+        </td>
+        <td>
+            &plus; <span style="color: rgb(0,123,255);" id="demo3">(1 &minus; a)</span> &times; b1
+        </td>
+        <td style="width: 64px;">
+            <span style="color: rgb(0,123,255);" id="demo6"></span>&nbsp;
+        </td>
+        <td>
+            <span style="color: rgb(0,123,255);" id="demo7"></span>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            {% if player.id_in_group == 2 %}
+                You (Player 2):  &nbsp;
+            {% else %}
+                Player 2: &nbsp;
+            {% endif %}
+        </td>
+        <td>
+            <span style="color: rgb(0,123,255);" id="demo4">a</span> &times; 5
+        </td>
+        <td>
+            &plus; <span style="color: rgb(0,123,255);" id="demo5">(1 &minus; a)</span> &times; b2
+        </td>
+        <td style="width: 64px;">
+           <span style="color: rgb(0,123,255);" id="demo8"></span>&nbsp;
+        </td>
+        <td>
+            <span style="color: rgb(0,123,255);" id="demo9"></span>
+        </td>
+    </tr>
+    </table>
+    </b>
+    </div>
+    <p>
+        Please drag the slider (or use the left and right arrow keys) to make your choice.
+{#        choose a value for <b style="color: rgb(0,123,255);">a</b> ranging from <b>0.00</b> to <b>1.00</b>.<br>#}
+    </p>
+
+    {% formfield group.r label=None %}
+
+    <p></p>
+
+    <input type="hidden" name="checkr" value="" id="id_checkr"/>
+
+    {% next_button %}
+
+    <input type="hidden" name="historyc1" value="" id="id_historyc1"/>
+
+{% if subsession.round_number > 1 %}
+  <div class="container">
+  <button style="color: rgb(255,255,255); background-color: rgb(0,123,255);" type="button" class="btn btn-info" data-toggle="collapse" id="buttonh" data-target="#demo">Click to view history</button>
+  <div id="demo" class="collapse">
+    <p>
+    </p>
+ <table class="table">
+    <tr>
+        <th>Period</th>
+        <th>Results</th>
+        <th>Payoffs</th>
+    </tr>
+    {% for p in player.in_previous_rounds %}
+        <tr>
+            <td>{{ p.round_number }}</td>
+            <td>
+                <b>c</b> = {{ p.group.e_g|floatformat:0 }}<br>
+                <b>a</b> = {{ p.group.r|floatformat:2 }}<br>
+                {% if p.group.r == 1 %}
+                    {% if player.id_in_group == 1 %}
+                        Player 2 could not choose <b>b1</b> and <b>b2</b>
+                    {% else %}
+                        You could not choose <b>b1</b> and <b>b2</b>
+                    {% endif %}
+                {% else %}
+                    <b>b1</b> = {{ p.group.payoff1|floatformat:2 }}<br>
+                    <b>b2</b> = {{ p.group.payoff2|floatformat:2 }}
+                {%  endif %}
+            </td>
+            <td>
+            {% if player.id_in_group == 1 %}
+                <b>You</b>: {{ p.group.payoff_p1 }}<br>
+                <b>Player 2</b>: {{ p.group.payoff_p2 }}
+            {% else %}
+                <b>Player 1</b>: {{ p.group.payoff_p1 }}<br>
+                <b>You</b>: {{ p.group.payoff_p2 }}
+            {% endif %}
+
+
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+  </div>
+</div>
+{% endif %}
+{% endblock %}
+    {% block scripts %}
+    <script>
+        $('input[name=r]').on('input', function() {
+            var x = $(this).val();
+            var x1 = (x * 1).toFixed(2);
+            var x2 = (x * (15 -{{ e }})).toFixed(2);
+            var x3 = (x * 5).toFixed(2);
+            var y = (1 - x).toFixed(2);
+            document.getElementById("demo2").innerHTML = x1;
+            document.getElementById("demo3").innerHTML = y;
+            document.getElementById("demo4").innerHTML = x1;
+            document.getElementById("demo5").innerHTML = y;
+            document.getElementById("demo6").innerHTML = '<span style="color: rgb(0,0,0);">&equals; </span>' + x2;
+            document.getElementById("demo7").innerHTML = '<span style="color: rgb(0,0,0);">&plus; </span>' + y + '<span style="color: rgb(0,0,0);"> &times;</span>' + '<span style="color: rgb(0,0,0);"> b1</span>';
+            document.getElementById("demo8").innerHTML = '<span style="color: rgb(0,0,0);">&equals; </span>' + x3;
+            document.getElementById("demo9").innerHTML = '<span style="color: rgb(0,0,0);">&plus; </span>' + y + '<span style="color: rgb(0,0,0);"> &times;</span>' + '<span style="color: rgb(0,0,0);"> b2</span>';
+            $('#id_checkr').val(1);
+        });
+    </script>
+    <script>
+        $('#buttonh').click(function() {
+            $('#id_historyc1').val(1);
+        });
+    </script>
+    <script>
+        setTimeout(function() {
+            document.getElementById("warningt").innerHTML =
+                '<div class="progress-bar-2" align="left" style="width: 250px; color: rgb(255,255,255); border-radius: 5px; background-color: rgb(228,28,28); height: 30px; text-align:center;"><b>Please finalize your decision</b></div>';
+        }, 60000);
+    </script>
+
+{% endblock %}
