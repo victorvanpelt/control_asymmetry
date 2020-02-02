@@ -1,5 +1,5 @@
 ## Asymmetric Adjustment of Control 
-This repository contains all data and code used for and since the launch of the study "[Asymmetric Adjustment of Control](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3507282)."
+This repository contains all data and code used for the paper "[Asymmetric Adjustment of Control](https://papers.ssrn.com/sol3/papers.cfm?abstract_id=3507282)."
 The research project was carried out by [Victor van Pelt](https://www.victorvanpelt.com).
 
 ### Data Collection
