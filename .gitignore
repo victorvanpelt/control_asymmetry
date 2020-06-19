@@ -1,4 +1,4 @@
-1_input/*
+1_input/
 !1_input/.gitignore
-2_pipeline/*
+2_pipeline/
 !2_pipeline/.gitignore
