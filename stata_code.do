@@ -1,53 +1,52 @@
 clear all
 set more off
-cd "C:\Users\gebruiker\Dropbox\Research\Projects\4. Single Author\3. Presentations and Submissions\2020 JAR\Control Asymmetry Data and Analysis"
-//cd "C:\Users\victor.vanpelt\Dropbox\Research\Projects\4. Single Author\3. Presentations and Submissions\2020 JAR\Control Asymmetry Data and Analysis"
+cd "C:\Users\victo\Dropbox\Research\Projects\Single Author\3. Presentations and Submissions\2020 TAR\control_asymmetry"
 
 //Import Data and save as dta file
 forvalue x=1(1)9 {
 	clear
-	import excel using "1. Input\accounting`x'.xlsx", firstrow
+	import excel using "1_input\accounting`x'.xlsx", firstrow
 	sleep 50
-	save "2. Pipeline\accounting`x'.dta", replace
+	save "2_pipeline\accounting`x'.dta", replace
 	clear
-	import excel using "1. Input\bret`x'.xlsx", firstrow
+	import excel using "1_input\bret`x'.xlsx", firstrow
 	sleep 50
-	save "2. Pipeline\bret`x'.dta", replace
+	save "2_pipeline\bret`x'.dta", replace
 	clear
-	import excel using "1. Input\epq`x'.xlsx", firstrow
+	import excel using "1_input\epq`x'.xlsx", firstrow
 	sleep 50
-	save "2. Pipeline\epq`x'.dta", replace
+	save "2_pipeline\epq`x'.dta", replace
 	clear
-	import excel using "1. Input\payment_info`x'.xlsx", firstrow
+	import excel using "1_input\payment_info`x'.xlsx", firstrow
 	sleep 50
-	save "2. Pipeline\payment_info`x'.dta", replace
+	save "2_pipeline\payment_info`x'.dta", replace
 }
 
 //Merge
 forvalue x=1(1)9 {
 	clear
-	use "2. Pipeline\accounting`x'.dta"
-	merge m:1 participantcode sessioncode using "2. Pipeline\bret`x'.dta"
+	use "2_pipeline\accounting`x'.dta"
+	merge m:1 participantcode sessioncode using "2_pipeline\bret`x'.dta"
 	drop _merge
 	sleep 50
-	merge m:1 participantcode sessioncode using "2. Pipeline\epq`x'.dta"
+	merge m:1 participantcode sessioncode using "2_pipeline\epq`x'.dta"
 	drop _merge
 	sleep 50
-	merge m:1 participantcode sessioncode using "2. Pipeline\payment_info`x'.dta"
+	merge m:1 participantcode sessioncode using "2_pipeline\payment_info`x'.dta"
 	drop _merge
-	save "2. Pipeline\session`x'.dta", replace
+	save "2_pipeline\session`x'.dta", replace
 }	
 
 //Make one dta file for all sessions
 clear all
-use "2. Pipeline\session1.dta"
+use "2_pipeline\session1.dta"
 forvalue x=2(1)9 {
-	append using "2. Pipeline\session`x'.dta", force
+	append using "2_pipeline\session`x'.dta", force
 }
 
 //Save merged raw dataset in pipeline folder
-save "3. Output\full raw dataset.dta", replace
-export excel using "3. Output\full raw dataset.xlsx", replace firstrow(var)
+save "3_output\full raw dataset.dta", replace
+export excel using "3_output\full raw dataset.xlsx", replace firstrow(var)
 
 
 //Drop pointless variables
@@ -128,6 +127,7 @@ sum trustworthy response if Principal==1
 sum trustworthy response if Agent==1
 //
 gen self_interest = (grouppayoff2-5)/10
+gen self_i_response = self_interest
 replace self_interest = . if control==1
 sum trustworthy self_interest if Principal==1
 
@@ -464,6 +464,24 @@ by id participantcode: replace response_post2=response_post2[_n+8] if response_p
 by id participantcode: replace response_post2=response_post2[_n+9] if response_post2>=. & Principal==1
 replace response_post2=. if Agent==1
 
+//Create response self-interested for principals ex-ante and ex-post
+sort id participantcode Period
+by id participantcode: egen response_self_pre= mean(self_i_response) if Post==0
+by id participantcode: replace response_self_pre=response_self_pre[_n-1] if response_self_pre>=.
+replace response_self_pre=. if Agent==1
+sort id participantcode Period
+by id participantcode: egen response_self_post = mean(self_i_response) if Post==1
+by id participantcode: replace response_self_post=response_self_post[_n+1] if response_self_post>=. & Principal==1
+by id participantcode: replace response_self_post=response_self_post[_n+2] if response_self_post>=. & Principal==1
+by id participantcode: replace response_self_post=response_self_post[_n+3] if response_self_post>=. & Principal==1
+by id participantcode: replace response_self_post=response_self_post[_n+4] if response_self_post>=. & Principal==1
+by id participantcode: replace response_self_post=response_self_post[_n+5] if response_self_post>=. & Principal==1
+by id participantcode: replace response_self_post=response_self_post[_n+6] if response_self_post>=. & Principal==1
+by id participantcode: replace response_self_post=response_self_post[_n+7] if response_self_post>=. & Principal==1
+by id participantcode: replace response_self_post=response_self_post[_n+8] if response_self_post>=. & Principal==1
+by id participantcode: replace response_self_post=response_self_post[_n+9] if response_self_post>=. & Principal==1
+replace response_self_post=. if Agent==1
+
 //Crease Trust average for principals ex-ante and ex-post
 sort id participantcode Period
 by id participantcode: egen trust_pre2 = mean(trustworthy) if Post==0
@@ -674,13 +692,13 @@ eststo: estpost sum control trustworthy grouppayoff_p1 grouppayoff_p2 tot_payoff
 eststo: estpost sum control trustworthy grouppayoff_p1 grouppayoff_p2 tot_payoff diff_payoff if groupe_g==1 & Period>=groupshockround & Principal==1 & NoUnd==0
 
 //esttab est1 est2 using "C:\Users\gebruiker\Dropbox\Apps\ShareLaTeX\Single Author\paper\Latex\table2.tex", ///
-esttab est1 est2 using "3. Output\table2.tex", ///
+esttab est1 est2 using "3_output\table2.tex", ///
 noobs replace f label booktabs nonum gaps plain ///
 cells("mean(fmt(3) label(Mean)) sd(fmt(3) label(S.d.)) min(fmt(3) label(Min)) max(fmt(3) label(Max)) count(fmt(0) label(N))") ///
 mtitles("Pre-change (Low Control Costs)" "Post-change (High Control Costs)")
 
 //esttab est3 est4 using "C:\Users\gebruiker\Dropbox\Apps\ShareLaTeX\Single Author\paper\Latex\table3.tex", ///
-esttab est3 est4 using "3. Output\table3.tex", ///
+esttab est3 est4 using "3_output\table3.tex", ///
 noobs replace f label booktabs nonum gaps plain ///
 cells("mean(fmt(3) label(Mean)) sd(fmt(3) label(S.d.)) min(fmt(3) label(Min)) max(fmt(3) label(Max)) count(fmt(0) label(N))") ///
 mtitles("Pre-change (High Control Costs)" "Post-change (Low Control Costs)")
@@ -788,7 +806,7 @@ estadd scalar estim_p_a = 2*ttail(r(df),abs(r(estimate)/r(se)))
 
 //
 //esttab using "C:\Users\gebruiker\Dropbox\Apps\ShareLaTeX\Single Author\paper\Latex\table4.tex", ///
-esttab using "3. Output\table4.tex", ///
+esttab using "3_output\table4.tex", ///
 	replace f obslast label booktabs b(3) p(3) alignment(S S S) ///
 	star(* 0.10 ** 0.05 *** 0.01) eqlabels(none) collabels(none) ///
 	mtitles("\shortstack {All\\ Changes}" "\shortstack {Earlier\\ Changes}" "\shortstack {Later\\ Changes}" "\shortstack {High Need\\ for Structure}" "\shortstack {Low Need\\ for Structure}") ///
@@ -827,7 +845,7 @@ estadd scalar se_a = r(se)
 estadd scalar estim_p_a = 2*ttail(r(df),abs(r(estimate)/r(se)))
 
 //esttab using "C:\Users\gebruiker\Dropbox\Apps\ShareLaTeX\Single Author\paper\Latex\table7.tex", ///
-esttab using "3. Output\table7.tex", ///
+esttab using "3_output\table7.tex", ///
 	replace f obslast label booktabs b(3) p(3) alignment(S S S) ///
 	star(* 0.10 ** 0.05 *** 0.01) eqlabels(none) collabels(none) ///
 	mtitles("\shortstack {Change in Average\\ Agent Contribution}") ///
@@ -838,10 +856,9 @@ esttab using "3. Output\table7.tex", ///
 eststo clear
 
 //TABLE 5
-
 eststo: regress control_change c.response_pre2 if LH==1 & Period==1 & Principal==1 & NoUnd==0, vce(robust)
 eststo: regress control_change c.response_pre2 if HL==1 & Period==1 & Principal==1 & NoUnd==0, vce(robust)
-esttab using "3. Output\table5.tex", ///
+esttab using "3_output\table5.tex", ///
 	replace f obslast label booktabs b(3) p(3) alignment(S S S) ///
 	star(* 0.10 ** 0.05 *** 0.01) eqlabels(none) collabels(none) ///
 	mtitles("\shortstack {Control Costs\\ Increase}" "\shortstack {Control Costs\\ Decrease}") ///
@@ -850,11 +867,6 @@ esttab using "3. Output\table5.tex", ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}") ///
 	labels(`"R$^2$"' `"Model Degrees of Freedom"' `"F-statistic"' `"Observations"' ))
 eststo clear
-
-//Agent Contribution
-
-
-
 
 // TABLE 6
 eststo: regress payoff_p1_diff LH if Period==1 & Principal==1 & NoUnd==0, vce(robust)
@@ -900,7 +912,7 @@ estadd scalar se_a = r(se)
 estadd scalar estim_p_a = 2*ttail(r(df),abs(r(estimate)/r(se)))
 
 //esttab using "C:\Users\gebruiker\Dropbox\Apps\ShareLaTeX\Single Author\paper\Latex\table6.tex", ///
-esttab using "3. Output\table6.tex", ///
+esttab using "3_output\table6.tex", ///
 	replace f obslast label booktabs b(3) p(3) alignment(S S S) ///
 	star(* 0.10 ** 0.05 *** 0.01) eqlabels(none) collabels(none) ///
 	mtitles("\shortstack {Principal\\ Payoff Change}" "\shortstack {Agent\\ Payoff Change}" "\shortstack {Total\\ Payoff Change}") ///
@@ -1005,8 +1017,8 @@ replace shocktimemore="Earlier Changes" if shocktimemore=="1"
 //
 
 //Save merged raw dataset in pipeline folder
-save "3. Output\modified dataset.dta", replace
-export excel using "3. Output\modified dataset.xlsx", replace firstrow(varl)
-export delimited using "3. Output\modified dataset.csv", replace
+save "3_output\modified dataset.dta", replace
+export excel using "3_output\modified dataset.xlsx", replace firstrow(varl)
+export delimited using "3_output\modified dataset.csv", replace
 
 exit, STATA clear
