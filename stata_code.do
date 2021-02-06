@@ -1,6 +1,6 @@
 clear all
 set more off
-cd "C:\Users\victo\Dropbox\Research\Projects\Single Author\3. Presentations and Submissions\2020 TAR\control_asymmetry"
+cd "C:\Users\victo\Dropbox\Research\Projects\Single Author\3. Presentations and Submissions\2020 MS\control_asymmetry"
 
 //Import Data and save as dta file
 forvalue x=1(1)9 {
@@ -121,6 +121,8 @@ sum Session
 
 gen trustworthy = (grouppayoff1-5)/10
 replace trustworthy = 1 if control==1
+gen observed = (control<1)
+//gen observed = (control==1)
 gen response = trustworthy
 replace trustworthy = . if control==1
 sum trustworthy response if Principal==1
@@ -463,6 +465,25 @@ by id participantcode: replace response_post2=response_post2[_n+7] if response_p
 by id participantcode: replace response_post2=response_post2[_n+8] if response_post2>=. & Principal==1
 by id participantcode: replace response_post2=response_post2[_n+9] if response_post2>=. & Principal==1
 replace response_post2=. if Agent==1
+
+//Create Observed average for principals
+
+sort id participantcode Period
+by id participantcode: egen observed_pre = mean(observed) if Post==0
+by id participantcode: replace observed_pre=observed_pre[_n-1] if observed_pre>=.
+replace observed_pre=. if Agent==1
+sort id participantcode Period
+by id participantcode: egen observed_post = mean(observed) if Post==1
+by id participantcode: replace observed_post=observed_post[_n+1] if observed_post>=. & Principal==1
+by id participantcode: replace observed_post=observed_post[_n+2] if observed_post>=. & Principal==1
+by id participantcode: replace observed_post=observed_post[_n+3] if observed_post>=. & Principal==1
+by id participantcode: replace observed_post=observed_post[_n+4] if observed_post>=. & Principal==1
+by id participantcode: replace observed_post=observed_post[_n+5] if observed_post>=. & Principal==1
+by id participantcode: replace observed_post=observed_post[_n+6] if observed_post>=. & Principal==1
+by id participantcode: replace observed_post=observed_post[_n+7] if observed_post>=. & Principal==1
+by id participantcode: replace observed_post=observed_post[_n+8] if observed_post>=. & Principal==1
+by id participantcode: replace observed_post=observed_post[_n+9] if observed_post>=. & Principal==1
+replace observed_post=. if Agent==1
 
 //Create response self-interested for principals ex-ante and ex-post
 sort id participantcode Period
@@ -856,8 +877,14 @@ esttab using "3_output\table7.tex", ///
 eststo clear
 
 //TABLE 5
-eststo: regress control_change c.response_pre2 if LH==1 & Period==1 & Principal==1 & NoUnd==0, vce(robust)
-eststo: regress control_change c.response_pre2 if HL==1 & Period==1 & Principal==1 & NoUnd==0, vce(robust)
+label variable observed_pre "Perceived Agent Reactions (Pre-change)"
+gen non_observed_pre = 1 - observed_pre
+label non_observed_pre "Not Perceived Agent Reactions (Pre-change)"
+sum observed_pre non_observed_pre if Period==1 & Principal==1 & NoUnd==0
+
+eststo: regress control_change c.observed_pre if LH==1 & Period==1 & Principal==1 & NoUnd==0, vce(robust)
+eststo: regress control_change c.non_observed_pre if HL==1 & Period==1 & Principal==1 & NoUnd==0, vce(robust)
+
 esttab using "3_output\table5.tex", ///
 	replace f obslast label booktabs b(3) p(3) alignment(S S S) ///
 	star(* 0.10 ** 0.05 *** 0.01) eqlabels(none) collabels(none) ///
@@ -867,6 +894,15 @@ esttab using "3_output\table5.tex", ///
 	layout("\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}" "\multicolumn{1}{c}{@}") ///
 	labels(`"R$^2$"' `"Model Degrees of Freedom"' `"F-statistic"' `"Observations"' ))
 eststo clear
+
+//Robustness without principals that always exercise full control before the change
+gen exclude_observed = (observed_pre==0 & HL==1 & Principal==1)
+replace exclude_observed = 1 if observed_pre==0 & LH==1 & Principal==1 & Period==1
+
+sum id if exclude_observed==1 & Period ==1 
+
+regress control_change c.observed_pre if LH==1 & Period==1 & Principal==1 & NoUnd==0 & exclude_observed==0, vce(robust)
+regress control_change c.observed_pre if HL==1 & Period==1 & Principal==1 & NoUnd==0 & exclude_observed==0, vce(robust)
 
 // TABLE 6
 eststo: regress payoff_p1_diff LH if Period==1 & Principal==1 & NoUnd==0, vce(robust)
