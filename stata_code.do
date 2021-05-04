@@ -1,6 +1,6 @@
 clear all
 set more off
-cd "C:\Users\victo\Dropbox\Research\Projects\Single Author\3. Presentations and Submissions\2020 MS\control_asymmetry"
+cd "C:\Users\victo\Dropbox\Research\Projects\Single Author\3. Presentations and Submissions\2021 CAR\control_asymmetry"
 
 //Import Data and save as dta file
 forvalue x=1(1)9 {
@@ -429,6 +429,25 @@ by id participantcode: replace control_post=control_post[_n+8] if control_post>=
 by id participantcode: replace control_post=control_post[_n+9] if control_post>=. & Principal==1
 replace control_post=. if Agent==1
 
+//Create Control dum count
+gen dum_control = (control==1)
+sort id participantcode Period
+by id participantcode: egen dum_control_pre = sum(dum_control) if Post==0
+by id participantcode: replace dum_control_pre=dum_control_pre[_n-1] if dum_control_pre>=.
+replace dum_control_pre=. if Agent==1
+sort id participantcode Period
+by id participantcode: egen dum_control_post = sum(dum_control) if Post==1
+by id participantcode: replace dum_control_post=dum_control_post[_n+1] if dum_control_post>=. & Principal==1
+by id participantcode: replace dum_control_post=dum_control_post[_n+2] if dum_control_post>=. & Principal==1
+by id participantcode: replace dum_control_post=dum_control_post[_n+3] if dum_control_post>=. & Principal==1
+by id participantcode: replace dum_control_post=dum_control_post[_n+4] if dum_control_post>=. & Principal==1
+by id participantcode: replace dum_control_post=dum_control_post[_n+5] if dum_control_post>=. & Principal==1
+by id participantcode: replace dum_control_post=dum_control_post[_n+6] if dum_control_post>=. & Principal==1
+by id participantcode: replace dum_control_post=dum_control_post[_n+7] if dum_control_post>=. & Principal==1
+by id participantcode: replace dum_control_post=dum_control_post[_n+8] if dum_control_post>=. & Principal==1
+by id participantcode: replace dum_control_post=dum_control_post[_n+9] if dum_control_post>=. & Principal==1
+replace dum_control_post=. if Agent==1
+
 //Create Response average first three and last three periods
 sort id participantcode Period
 by id participantcode: egen trust_pre = mean(trustworthy) if Period<=3
@@ -541,6 +560,7 @@ replace control_post2=. if Agent==1
 
 //Create Control Change
 gen control_change=(control_post-control_pre)
+gen dum_control_change=(dum_control_post-dum_control_pre)
 gen control_change2=(control_post2-control_pre2)
 gen abs_control_change=abs(control_change)
 gen abs_control_change2=abs(control_change2)
@@ -582,9 +602,7 @@ egen ptotaleur=sum(totaleur) if Period==12
 sum ptotaleur
 */
 
-gen dum_control = (control==1)
-tabulate dum_control groupe_g if Period<groupshockround & Principal==1, chi2 
-tabulate dum_control groupe_g if Period>=groupshockround & Principal==1, chi2 
+
 
 // Principals
 sum control if Principal==1, d
@@ -705,12 +723,28 @@ label variable diff_payoff "Payoff Difference"
 label variable tot_payoff "Total Payoffs"
 label variable trust_change "Change in Average Agent Contribution"
 label variable response_pre2 "Agent Social Behavior (Pre-change)"
+
+/* Analyses */
+/*
+sum dum_control_pre dum_control_post if Principal==1 & NoUnd==0 & LH==1 & Period==1
+sum dum_control_pre dum_control_post if Principal==1 & NoUnd==0 & LH==0 & Period==1
+
+sum dum_control_pre dum_control_post if Principal==1 & NoUnd==0 & LH==1 & Period==1 & groupshockround<=7
+sum dum_control_pre dum_control_post if Principal==1 & NoUnd==0 & LH==0 & Period==1 & groupshockround<=7
+
+sum dum_control_pre dum_control_post if Principal==1 & NoUnd==0 & LH==1 & Period==1 & groupshockround>7
+sum dum_control_pre dum_control_post if Principal==1 & NoUnd==0 & LH==0 & Period==1 & groupshockround>7
+
+estpost tabstat dum_control control trustworthy grouppayoff_p1 grouppayoff_p2 tot_payoff diff_payoff if Period<groupshockround & Principal==1 & NoUnd==0, statistics(mean sd min max n) by(groupe_g)
+esttab using "3_output\Table 1.rtf", replace cells("dum_control control trustworthy grouppayoff_p1 grouppayoff_p2 tot_payoff diff_payoff") noobs nomtitle nonumber eqlabels("Pre-change (Low Control Costs)" "Post-change (High Control Costs)") varwidth(20)
+eststo clear
+*/
 /// LH
-eststo: estpost sum control trustworthy grouppayoff_p1 grouppayoff_p2 tot_payoff diff_payoff if groupe_g==1 & Period<groupshockround & Principal==1 & NoUnd==0
-eststo: estpost sum control trustworthy grouppayoff_p1 grouppayoff_p2 tot_payoff diff_payoff if groupe_g==9 & Period>=groupshockround & Principal==1 & NoUnd==0
+eststo: estpost sum dum_control control trustworthy grouppayoff_p1 grouppayoff_p2 tot_payoff diff_payoff if groupe_g==1 & Period<groupshockround & Principal==1 & NoUnd==0, d
+eststo: estpost sum dum_control control trustworthy grouppayoff_p1 grouppayoff_p2 tot_payoff diff_payoff if groupe_g==9 & Period>=groupshockround & Principal==1 & NoUnd==0, d
 /// HL
-eststo: estpost sum control trustworthy grouppayoff_p1 grouppayoff_p2 tot_payoff diff_payoff if groupe_g==9 & Period<groupshockround & Principal==1 & NoUnd==0
-eststo: estpost sum control trustworthy grouppayoff_p1 grouppayoff_p2 tot_payoff diff_payoff if groupe_g==1 & Period>=groupshockround & Principal==1 & NoUnd==0
+eststo: estpost sum dum_control control trustworthy grouppayoff_p1 grouppayoff_p2 tot_payoff diff_payoff if groupe_g==9 & Period<groupshockround & Principal==1 & NoUnd==0, d
+eststo: estpost sum dum_control control trustworthy grouppayoff_p1 grouppayoff_p2 tot_payoff diff_payoff if groupe_g==1 & Period>=groupshockround & Principal==1 & NoUnd==0, d
 
 //esttab est1 est2 using "C:\Users\gebruiker\Dropbox\Apps\ShareLaTeX\Single Author\paper\Latex\table2.tex", ///
 esttab est1 est2 using "3_output\table2.tex", ///
@@ -732,6 +766,13 @@ sktest control trustworthy grouppayoff_p1 grouppayoff_p2 tot_payoff diff_payoff 
 ranksum control if Principal==1 & Period<groupshockround & NoUnd==0, by(LH)
 ranksum control if Principal==1 & Period>=groupshockround & NoUnd==0, by(LH)
 //
+tabulate dum_control LH if Principal==1 & Period<groupshockround & NoUnd==0, chi2
+tabulate dum_control LH if Principal==1 & Period>=groupshockround & NoUnd==0, chi2
+
+tabulate dum_control Post if Principal==1 & LH==1 & NoUnd==0, chi2
+tabulate dum_control Post if Principal==1 & LH==0 & NoUnd==0, chi2
+
+
 ranksum grouppayoff_p1 if Principal==1 & Period<groupshockround & NoUnd==0, by(LH)
 ranksum grouppayoff_p1 if Principal==1 & Period>=groupshockround & NoUnd==0, by(LH)
 //
@@ -780,6 +821,7 @@ sum id if trustworthy==0 & Principal==1 & NoUnd==0 & control<1
 sum id if trustworthy>0 & Principal==1 & NoUnd==0 & control<1
 
 //Hypothesis 1 and 2
+//regress dum_control_change LH if Period==1 & Principal==1 & NoUnd==0, vce(robust)
 eststo: regress control_change LH if Period==1 & Principal==1 & NoUnd==0, vce(robust)
 lincom _cons+LH
 estadd scalar estim_lh = r(estimate)
@@ -879,7 +921,7 @@ eststo clear
 //TABLE 5
 label variable observed_pre "Perceived Agent Reactions (Pre-change)"
 gen non_observed_pre = 1 - observed_pre
-label non_observed_pre "Not Perceived Agent Reactions (Pre-change)"
+label variable non_observed_pre "Not Perceived Agent Reactions (Pre-change)"
 sum observed_pre non_observed_pre if Period==1 & Principal==1 & NoUnd==0
 
 eststo: regress control_change c.observed_pre if LH==1 & Period==1 & Principal==1 & NoUnd==0, vce(robust)
@@ -987,6 +1029,7 @@ Agent==1 & NoUnd==0
 
 //Prepare for graphs
 label variable control "Control"
+label variable dum_control "Full Control"
 label variable LH "Treatment"
 tostring LH, replace
 replace LH="Low-to-High" if LH=="1"
@@ -1058,3 +1101,10 @@ export excel using "3_output\modified dataset.xlsx", replace firstrow(varl)
 export delimited using "3_output\modified dataset.csv", replace
 
 exit, STATA clear
+
+
+
+
+
+
+
